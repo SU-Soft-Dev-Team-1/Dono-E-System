@@ -310,7 +310,6 @@
                 <div class="w-1/2">
                   <label class="block text-black text-sm font-semibold font-['Ubuntu'] mb-1">Device Type</label>
                   <input id="deviceType" v-model="deviceType" type="text" class="w-full h-9 px-3 bg-white rounded-lg border border-gray-300 flex items-center gap-2 text-sm" placeholder="Type(Phone/Laptop/etc.)"/>
-                  <input id="deviceType" v-model="deviceType" type="text" class="w-full h-9 px-3 bg-white rounded-lg border border-gray-300 flex items-center gap-2 text-sm" placeholder="Type(Phone/Laptop/etc.)"/>
                 </div>
   
                 <!-- Device Condition -->
@@ -318,13 +317,6 @@
                   <label class="block text-black text-sm font-semibold font-['Ubuntu'] mb-1">
                     Device Condition
                   </label>
-                  <div class="w-full h-9 px-3 bg-white rounded-lg border border-gray-300 flex items-center justify-between text-sm relative">
-                    <select v-model="selectedCondition" class="w-full h-full px-3 bg-white rounded-lg border-none appearance-none focus:outline-none text-[#1b3c59] text-sm font-medium font-['Ubuntu']">
-                      <option value="Almost new">Almost new</option>
-                      <option value="Slightly Used">Slightly Used</option>
-                      <option value="Slightly Worn">Slightly Worn</option>
-                      <option value="Defective">Defective</option>
-                    </select>
                   <div class="w-full h-9 px-3 bg-white rounded-lg border border-gray-300 flex items-center justify-between text-sm relative">
                     <select v-model="selectedCondition" class="w-full h-full px-3 bg-white rounded-lg border-none appearance-none focus:outline-none text-[#1b3c59] text-sm font-medium font-['Ubuntu']">
                       <option value="Almost new">Almost new</option>
@@ -362,7 +354,6 @@
                 <input id="donatorName" v-model="donatorName" type="text" 
                       class="w-full p-3 mt-3 bg-white rounded-lg border border-[#d9d9d9] text-[#1b3c59] text-base font-['Ubuntu']" 
                       placeholder="Username" />
-                      placeholder="Username" />
               </div>
   
               <!-- Upload Button -->
@@ -379,8 +370,6 @@
             </div>
           </div>
         </div>
-  </div>
-  
   </div>
   </template>
   
