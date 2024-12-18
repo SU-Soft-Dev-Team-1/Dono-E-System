@@ -204,6 +204,50 @@
             <div class="text-[28px] text-[#1b3c59] font-bold mb-[18px] text-center">
               Upload Form
             </div>
+
+    <!-- Success Notification -->
+    <div
+      class="w-[205px] h-[61px] px-5 py-3 bg-[#c3fad9] rounded-[10px] shadow justify-start items-center gap-5 inline-flex mt-3"
+    >
+      <div class="flex-col justify-start items-start gap-2 inline-flex">
+        <span class="w-6 h-6 relative">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-8">
+            <path
+              fill-rule="evenodd"
+              d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </span>
+      </div>
+      <div class="w-28 h-[41px] justify-end items-center gap-4 flex">
+        <div class="flex-col justify-center items-end gap-[5px] inline-flex">
+          <div class="text-[#2e2f33] text-base font-semibold font-['Ubuntu']">Success.</div>
+          <div class="text-right text-[#2e2f33] text-sm font-normal font-['Ubuntu']">Item added</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Failure Notification -->
+    <div
+      class="w-[205px] h-[61px] px-5 py-3 bg-[#f9dedc] rounded-[10px] shadow justify-start items-center gap-5 inline-flex mt-3"
+    >
+      <span class="w-6 h-6 relative">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-8">
+          <path
+            fill-rule="evenodd"
+            d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z"
+            clip-rule="evenodd"
+          />
+        </svg>
+      </span>
+      <div class="w-29 h-[49px] justify-end items-center gap-4 flex">
+        <div class="flex-col justify-center items-end gap-[5px] inline-flex">
+          <div class="text-[#2e2f33] text-base font-semibold font-['Ubuntu']">Action Failed.</div>
+          <div class="text-right text-[#2e2f33] text-sm font-normal font-['Ubuntu']">Failed to add item</div>
+        </div>
+      </div>
+    </div>
   
             <!-- Modal Content (with scrollbar) -->
             <div class="overflow-y-auto max-h-[calc(100vh-10rem)] w-full p-2" style="border-radius: 8px;">
