@@ -408,6 +408,7 @@ onMounted(() => {
     }; 
     
     itemStore.addItem(newItem); // Add the new item to the Pinia store 
+    toggleUploadModal();
     console.log("New Item Added:", newItem); 
   };
 
