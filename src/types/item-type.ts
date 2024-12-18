@@ -12,4 +12,6 @@ export type Item = {
     height: number;
     status: string;
     description: string;
+    isListed: boolean;  
+    isSold: boolean;
 }

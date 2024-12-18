@@ -55,12 +55,12 @@
       <ul class="absolute flex flex-col left-0 top-14 space-y-4 overflow-auto max-h-[calc(100vh-4rem)] scrollbar-hide py-2">
         <li v-for="(row, rowIndex) in rows" :key="rowIndex">
           <div class="grid w-full top-[11%] left-0">
-            <div class="text-[#1B3C59] text-xl font-medium mb-2">{{ row.title }} ({{ itemsData.length }})</div>
+            <div class="text-[#1B3C59] text-xl font-medium mb-2">{{ row.title }} ({{ row.data.length }})</div>
   
             <!-- Items List -->
             <ul class="flex space-x-4 overflow-x-auto scrollbar-hide py-2">
               <li
-                v-for="item in displayedItem"
+                v-for="item in row.data"
                 :key="item.id"
                 @click="openBasketModal(item)"
                 class="w-[13.375rem] h-[14.0625rem] px-[1.1875rem] py-[0.875rem] bg-[#f2f2f0] rounded-[0.625rem] flex-col justify-center items-start gap-[0.3125rem] inline-flex cursor-pointer"
@@ -321,6 +321,7 @@
   import { StatusColor } from '~/common/enums/StatusColors';
   import { StatusText } from '~/common/enums/StatusText';
   import type { displayItem } from '~/types/displayItem-type';
+import type { Item } from '~/types/item-type';
   
   // State: Modal visibility and selected item for basket modal
   const isUploadModalOpen = ref(false); // For Upload Modal
@@ -358,35 +359,80 @@
       console.log("Uploaded Files:", uploadedFiles);
     }
   };
-  
-  // Store and Data for Items
-  const itemsData = ref<displayItem[]>([]);
-  const itemStore = useItemStore();
-  
-  const filteredItems = computed(() =>
-    itemStore.getItems.map(item => ({
+
+const itemStore = useItemStore();
+const itemsData = ref<Item[]>([]);
+
+interface DisplayItem {
+  images: string;
+  status: string;
+  type: string;
+  name: string;
+  id: string;
+}
+
+// Computed properties for filtered items by category
+const phones = computed<DisplayItem[]>(() =>
+  itemStore.getItems
+    .filter((item: Item) => item.type === 'Phone' && item.isListed && !item.isSold)
+    .map((item: Item) => ({
       images: item.images[0],
       status: item.status,
       type: item.type,
       name: item.name,
       id: item.id
     }))
-  );
-  
-  // Rows for different sections
-  const rows = [
-    { title: 'Featured' },
-    { title: 'Phones' },
-    { title: 'Laptops' }
-  ];
-  
-  // Initialize data on component mount
-  onMounted(() => {
-    itemsData.value = filteredItems.value;
-  });
-  
-  const displayedItem = computed(() => itemsData.value);
-  
+);
+
+const laptops = computed<DisplayItem[]>(() =>
+  itemStore.getItems
+    .filter((item: Item) => item.type === 'Laptop' && item.isListed && !item.isSold)
+    .map((item: Item) => ({
+      images: item.images[0],
+      status: item.status,
+      type: item.type,
+      name: item.name,
+      id: item.id
+    }))
+);
+
+const tvs = computed<DisplayItem[]>(() =>
+  itemStore.getItems
+    .filter((item: Item) => item.type === 'TV' && item.isListed && !item.isSold)
+    .map((item: Item) => ({
+      images: item.images[0],
+      status: item.status,
+      type: item.type,
+      name: item.name,
+      id: item.id
+    }))
+);
+
+const others = computed<DisplayItem[]>(() =>
+  itemStore.getItems
+    .filter((item: Item) => !['Phone', 'Laptop', 'TV'].includes(item.type) && item.isListed && !item.isSold)
+    .map((item: Item) => ({
+      images: item.images[0],
+      status: item.status,
+      type: item.type,
+      name: item.name,
+      id: item.id
+    }))
+);
+
+// Rows for different sections
+const rows = [
+  { title: 'Phones', data: phones.value },
+  { title: 'Laptops', data: laptops.value },
+  { title: 'TVs', data: tvs.value },
+  { title: 'Others', data: others.value },
+];
+
+// Initialize data on component mount
+onMounted(() => {
+  itemsData.value = itemStore.getItems;
+});
+
   // Status Text and Color Helpers
   const getStatusText = (status: number) => {
     const statusText: { [key: number]: string } = {
