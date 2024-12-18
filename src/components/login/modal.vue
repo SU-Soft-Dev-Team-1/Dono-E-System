@@ -149,6 +149,7 @@ async function handleSignIn() {
             password: signInPassword.value,
         });
         if (error) throw error;
+        closeModal
         router.push("/home");
     } catch (error) {
         showSignInError.value = true;
@@ -171,6 +172,7 @@ async function handleSignUp() {
     } catch (error) {
         showSignInError.value = true;
     }
+    toggleNextPage();
 }
 
 function toggleNextPage() {
