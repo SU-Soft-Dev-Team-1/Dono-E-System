@@ -99,7 +99,7 @@
       </ul>
   
       <!-- Basket Modal -->
-      <div v-if="isBasketModalOpen" class="fixed top-0 left-[-327px] w-screen h-screen bg-[rgba(0,0,0,0.5)] flex    justify-center items-center z-50">
+      <div v-if="isBasketModalOpen" class="fixed top-0 left-[-20.438rem] w-screen h-screen bg-[rgba(0,0,0,0.5)] flex    justify-center items-center z-50">
         <div class="w-[500px] bg-[#f3f4f6] rounded-lg shadow-lg p-5 flex flex-col gap-4">
             <!-- Modal Header -->
             <div class="text-2xl font-bold text-[#ffffff] bg-[#1b3c59] rounded-t-lg px-4 py-3">
@@ -121,7 +121,7 @@
               <p class="text-sm text-gray-600 mb-1">{{ selectedItem?.type || 'Predator Helios' }}</p>
               <p class="h-3.5 px-[0.3125rem] bg-[#e4e4e4] rounded-xl justify-start items-center gap-[0.3125rem] inline-flex">
                 <span
-                  class="w-[0.5625rem] h-[0.5625rem] rounded-[5px]"
+                  class="w-[0.5625rem] h-[0.5625rem] rounded-[0.313rem]"
                   :class="{
                     'bg-[#22d056]': selectedItem?.status === 'Almost new',
                     'bg-[#ffa057]': selectedItem?.status === 'Slightly Worn',
@@ -149,15 +149,15 @@
           <div v-if="selectedItem?.images && selectedItem.images.length">
             <button
               @click="openViewImagesModal"
-              class="mt-2 px-4 py-2 text-[#456173] text-xs font-normal font-['Ubuntu'] underline">
+              class="mt-2 px-[1.875rem] py-2 text-[#456173] text-xs font-normal font-['Ubuntu'] underline">
                 View Product Images
             </button>
           </div>
   
           <!-- View Product Images Modal -->
           <div v-if="isViewImagesModalOpen" 
-              class="fixed top-0 left-[-327px] w-screen h-screen bg-[rgba(0,0,0,0.5)] flex justify-center items-center z-50">
-            <div class="w-[600px] bg-[#f2f2f0] rounded-lg shadow-lg p-5">
+              class="fixed top-0 left-[-20.438rem] w-screen h-screen bg-[rgba(0,0,0,0.5)] flex justify-center items-center z-50">
+            <div class="w-[37.5rem] bg-[#f2f2f0] rounded-lg shadow-lg p-5">
   
               <!-- Modal Header -->
               <div class="text-2xl font-bold text-[#1b3c59] mb-4">Product Images</div>
@@ -184,13 +184,33 @@
   
           <!-- Footer Buttons -->
           <div class="flex justify-end gap-2">
-            <button @click="closeBasketModal" class="px-4 py-2 border rounded-lg text-gray-600 hover:bg-gray-200">
+            <button @click="openConfirmation('cancel')" class="px-4 py-2 border rounded-lg text-gray-600 hover:bg-gray-200">
               Cancel
             </button>
   
-            <button @click="addToBasket" class="px-4 py-2 bg-[#1b3c59] text-white rounded-lg hover:bg-[#163348]">
+            <button @click="openConfirmation('add')" class="px-4 py-2 bg-[#1b3c59] text-white rounded-lg hover:bg-[#163348]">
               <i class="fas fa-shopping-basket mr-2"></i> Add to Basket
             </button>
+          </div>
+
+          <!-- Confirmation Dialog -->
+          <div v-if="showConfirmation" class="fixed top-0 left-[-20.438rem] w-screen h-screen bg-[rgba(0,0,0,0.5)] flex justify-center items-center z-50">
+            <div class="w-[547px] h-[211px] bg-white rounded-lg shadow-lg p-6 flex flex-col gap-8">
+                <h3 class="text-xl text-center font-bold text-[#1b3c59]">
+                  {{ confirmationTitle }}
+                </h3>
+                <p class="text-gray-900 text-base font-['Ubuntu'] text-center">
+                  {{ confirmationMessage }}
+                </p>
+              <div class="flex justify-end gap-2">
+                <button @click="closeConfirmation" class="px-4 py-2 border rounded-lg text-gray-600 hover:bg-gray-200">
+                  Cancel
+                </button>
+                <button @click="confirmAction" class="px-4 py-2 bg-[#1b3c59] text-white rounded-lg hover:bg-[#163348]">
+                  {{ confirmationButtonText }}
+                </button>
+              </div>
+            </div>
           </div>
   
         </div>
@@ -198,56 +218,54 @@
   
         <!-- Upload Tech Form Modal -->
         <div v-if="isUploadModalOpen" 
-                class="fixed top-0 left-[-327px] w-screen h-screen bg-[rgba(0,_0,_0,_0.5)] flex justify-center items-center">
-          <div class="w-[600px] max-h-[90vh] inset-0 bg-[#f2f2f0] rounded-[10px] px-[41px] py-[18px] overflow-hidden flex flex-col justify-center items-center" @click.stop>
+                class="fixed top-0 left-[-20.438rem] w-screen h-screen bg-[rgba(0,_0,_0,_0.5)] flex justify-center items-center">
+          <div class="w-[37.5rem] max-h-[90vh] inset-0 bg-[#f2f2f0] rounded-[10px] px-[2.563rem] py-[1.125rem] overflow-hidden flex flex-col justify-center items-center" @click.stop>
             <!-- Modal Header -->
-            <div class="text-[28px] text-[#1b3c59] font-bold mb-[18px] text-center">
+            <div class="text-[1.75rem] text-[#1b3c59] font-bold mb-[1.125rem] text-center">
               Upload Form
             </div>
 
-    <!-- Success Notification -->
-    <div
-      class="w-[205px] h-[61px] px-5 py-3 bg-[#c3fad9] rounded-[10px] shadow justify-start items-center gap-5 inline-flex mt-3"
-    >
-      <div class="flex-col justify-start items-start gap-2 inline-flex">
-        <span class="w-6 h-6 relative">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-8">
-            <path
-              fill-rule="evenodd"
-              d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z"
-              clip-rule="evenodd"
-            />
-          </svg>
-        </span>
-      </div>
-      <div class="w-28 h-[41px] justify-end items-center gap-4 flex">
-        <div class="flex-col justify-center items-end gap-[5px] inline-flex">
-          <div class="text-[#2e2f33] text-base font-semibold font-['Ubuntu']">Success.</div>
-          <div class="text-right text-[#2e2f33] text-sm font-normal font-['Ubuntu']">Item added</div>
-        </div>
-      </div>
-    </div>
+        <!-- Success Notification -->
+        <div
+          class="w-[12.813rem] h-[3.813rem] px-5 py-3 bg-[#c3fad9] rounded-[10px] shadow justify-start items-center gap-5 inline-flex mt-3">
+            <div class="flex-col justify-start items-start gap-2 inline-flex">
+              <span class="w-6 h-6 relative inline-block align-middle">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-8">
+                  <path
+                    fill-rule="evenodd"
+                    d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </span>
+            </div>
+            <div class="w-[7rem] h-[2.563rem] justify-end items-center gap-4 flex">
+              <div class="flex-col justify-center items-end gap-[0.313rem] inline-flex">
+                <p class="text-[#2e2f33] text-base font-semibold font-['Ubuntu']">Success.</p>
+                <p class="text-right text-[#2e2f33] text-sm font-normal font-['Ubuntu']">Item added</p>
+              </div>
+            </div>
+          </div>
 
-    <!-- Failure Notification -->
-    <div
-      class="w-[205px] h-[61px] px-5 py-3 bg-[#f9dedc] rounded-[10px] shadow justify-start items-center gap-5 inline-flex mt-3"
-    >
-      <span class="w-6 h-6 relative">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-8">
-          <path
-            fill-rule="evenodd"
-            d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z"
-            clip-rule="evenodd"
-          />
-        </svg>
-      </span>
-      <div class="w-29 h-[49px] justify-end items-center gap-4 flex">
-        <div class="flex-col justify-center items-end gap-[5px] inline-flex">
-          <div class="text-[#2e2f33] text-base font-semibold font-['Ubuntu']">Action Failed.</div>
-          <div class="text-right text-[#2e2f33] text-sm font-normal font-['Ubuntu']">Failed to add item</div>
-        </div>
-      </div>
-    </div>
+          <!-- Failure Notification -->
+          <div
+            class="w-[12.813rem] h-[3.813rem] px-5 py-3 bg-[#f9dedc] rounded-[10px] shadow justify-start items-center gap-5 inline-flex mt-3">
+            <span class="w-6 h-6 relative inline-block align-middle">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-8">
+                <path
+                  fill-rule="evenodd"
+                  d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </span>
+            <div class="w-[7.25rem] h-[3.063rem] justify-end items-center gap-4 flex">
+              <div class="flex-col justify-center items-end gap-[0.313rem] inline-flex">
+                <p class="text-[#2e2f33] text-base font-semibold font-['Ubuntu']">Action Failed.</p>
+                <p class="text-right text-[#2e2f33] text-sm font-normal font-['Ubuntu']">Failed to add item</p>
+              </div>
+            </div>
+          </div>
   
             <!-- Modal Content (with scrollbar) -->
             <div class="overflow-y-auto max-h-[calc(100vh-10rem)] w-full p-2" style="border-radius: 8px;">
@@ -361,19 +379,75 @@
   </div>
   </template>
   
-  <script setup lang="ts">
+<script setup lang="ts">
   import { computed, ref, onMounted } from 'vue';
   import { useItemStore } from '~/stores/store-itemStore';
   import { StatusColor } from '~/common/enums/StatusColors';
   import { StatusText } from '~/common/enums/StatusText';
   import type { displayItem } from '~/types/displayItem-type';
-import type { Item } from '~/types/item-type';
+  import type { Item } from '~/types/item-type';
   
-  // State: Modal visibility and selected item for basket modal
-  const isUploadModalOpen = ref(false); // For Upload Modal
-  const isBasketModalOpen = ref(false); // For Basket Modal
-  const selectedItem = ref<displayItem | null>(null);
+// Reactive references for modals and selected items
+const isUploadModalOpen = ref(false); // For Upload Modal
+const isBasketModalOpen = ref(false); // For Basket Modal
+const selectedItem = ref<displayItem | null>(null); // Currently selected item
+
+// Reactive references for the confirmation dialog
+const showConfirmation = ref(false);
+const confirmationType = ref<string>(''); // 'cancel' or 'add'
+const confirmationTitle = ref<string>('');
+const confirmationMessage = ref<string>('');
+const confirmationButtonText = ref<string>('');
+
+// Function to open the basket modal
+const openBasketModal = (item: displayItem) => {
+  selectedItem.value = item;
+  isBasketModalOpen.value = true;
+};
+
+// Function to close the basket modal
+const closeBasketModal = () => { 
+  isBasketModalOpen.value = false;
+  selectedItem.value = null; // Reset selected item when closing modal
+};
+
+// Function to open the confirmation dialog based on the type ('cancel' or 'add')
+const openConfirmation = (type: string) => {
+  confirmationType.value = type;
   
+  if (type === 'cancel') {
+    confirmationTitle.value = 'Cancel Transaction';
+    confirmationMessage.value = `Are you sure you want to cancel your transaction for "${selectedItem.value?.name || 'item'}"?`;
+    confirmationButtonText.value = 'Confirm';
+  } else if (type === 'add') {
+    confirmationTitle.value = 'Add To Basket';
+    confirmationMessage.value = `Are you sure you want to add "${selectedItem.value?.name || 'item'}" to your basket?`;
+    confirmationButtonText.value = 'Add to My Cart';
+  }
+
+  showConfirmation.value = true;
+};
+
+// Function to close the confirmation dialog
+const closeConfirmation = () => {
+  showConfirmation.value = false;
+};
+
+// Function to handle the action based on confirmation type
+const confirmAction = () => {
+  if (confirmationType.value === 'cancel') {
+    // Handle cancel action
+    alert('Transaction has been cancelled.');
+    closeBasketModal(); // Close basket modal after cancellation
+  } else if (confirmationType.value === 'add') {
+    // Handle add to basket action
+    alert('Item has been added to the basket.');
+    closeBasketModal(); // Close basket modal after adding to the basket
+  }
+  showConfirmation.value = false;
+};
+  
+
   // File upload (Upload Modal Logic)
   const uploadFile = ref<File | null>(null);
   const toggleUploadModal = () => {
@@ -405,6 +479,7 @@ import type { Item } from '~/types/item-type';
       console.log("Uploaded Files:", uploadedFiles);
     }
   };
+
 
 const itemStore = useItemStore();
 const itemsData = ref<Item[]>([]);
@@ -523,14 +598,4 @@ onMounted(() => {
     return statusColor[status] || "";
   };
   
-  // Basket Modal Logic
-  const openBasketModal = (item: displayItem) => {
-    selectedItem.value = item;
-    isBasketModalOpen.value = true;
-  };
-  
-  const closeBasketModal = () => {
-    isBasketModalOpen.value = false;
-    selectedItem.value = null;
-  };
   </script>
