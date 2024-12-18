@@ -500,6 +500,36 @@ const confirmAction = () => {
     }
   };
 
+  const handleSubmit = () => { 
+    if (!deviceName.value || !brandName.value || !modelName.value || !descriptionDetails.value || !weightNumber.value || !heightNumber.value || !deviceType.value || !selectedCondition.value || !donatorName.value) { 
+      alert("Please fill in all the required fields before uploading."); 
+      return; 
+    }
+
+    const newItem: Item = { 
+      username: donatorName.value, 
+      id: generateRandomId(), 
+      name: deviceName.value, 
+      model: modelName.value, 
+      type: deviceType.value, 
+      brand: brandName.value, 
+      weight: weightNumber.value!, 
+      images: deviceImages.value, 
+      video: null, // Assuming no video upload functionality for now 
+      sellerIdPhoto: "https://via.placeholder.com/100", // Placeholder for now 
+      height: heightNumber.value!, 
+      status: selectedCondition.value, 
+      description: descriptionDetails.value, 
+      isListed: true, 
+      isSold: false, 
+      isCart: false, 
+    }; 
+    
+    itemStore.addItem(newItem); // Add the new item to the Pinia store 
+    toggleUploadModal();
+    console.log("New Item Added:", newItem); 
+  };
+
 interface DisplayItem {
   brand: string;
   weight: number;
