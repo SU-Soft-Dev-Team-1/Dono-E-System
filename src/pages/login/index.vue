@@ -15,8 +15,8 @@
       </div>
       
       <div class="absolute right-[13.5vw] top-1/2 transform -translate-y-1/2 flex">
-        <div class="bg-[#a6ed8e] flex justify-center mt-[250px] items-center w-[300px] h-[450px]"></div>
-        <div class="bg-[#1b3c59] flex justify-center mt-[250px] items-center w-[300px] h-[450px]"></div>
+        <img class="bg-[#a6ed8e] flex justify-center mt-[250px] items-center w-[300px] h-[450px]" src="~/assets/img/Dono-image.png"/>
+        <img class="bg-[#1b3c59] flex justify-center mt-[250px] items-center w-[300px] h-[450px]" src="~/assets/img/Dono-image2.png"/>
       </div>
       
       <div class="w-screen absolute top-4 left-0 flex justify-between items-center px-8"></div> 
