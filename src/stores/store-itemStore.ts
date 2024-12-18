@@ -391,5 +391,14 @@ export const useItemStore = defineStore('itemStore', {
     loadItemsFromLocalStorage() { 
       this.items = JSON.parse(localStorage.getItem('items') || '[]'); 
     },
+    updateItemStatus(itemId: string, isCart: boolean, isListed: boolean, isSold:boolean) {
+      const item = this.items.find(item => item.id === itemId);
+      if (item) {
+        item.isCart = isCart;
+        item.isListed = isListed;
+        item.isSold = isSold;
+        this.saveItemsToLocalStorage();
+      }
+    }
   }
 });
