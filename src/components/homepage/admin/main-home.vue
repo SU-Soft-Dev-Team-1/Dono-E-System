@@ -68,7 +68,7 @@
                 <!-- Item Image -->
                 <img
                   class="self-stretch h-[9.6875rem] rounded-xl border-2 border-[#d4d3d3]"
-                  :src="item.images"
+                  :src="item.images[0]"
                   alt="Item Image"
                 />
                 <!-- Item Details -->
@@ -376,23 +376,36 @@
   </template>
   
 <script setup lang="ts">
-  import { computed, ref, onMounted } from 'vue';
-  import { useItemStore } from '~/stores/store-itemStore';
-  import { StatusColor } from '~/common/enums/StatusColors';
-  import { StatusText } from '~/common/enums/StatusText';
-  import type { displayItem } from '~/types/displayItem-type';
+import { computed, ref, onMounted } from 'vue';
+import { useItemStore } from '~/stores/store-itemStore';
+import { StatusColor } from '~/common/enums/StatusColors';
+import { StatusText } from '~/common/enums/StatusText';
 import type { Item } from '~/types/item-type';
+
+// Reactive references for modals and selected items
+const isUploadModalOpen = ref(false); // For Upload Modal
+const isBasketModalOpen = ref(false); // For Basket Modal
+const selectedItem = ref<Item | null>(null); // Currently selected item
+const currentSelectedItemId = ref<string | null>(null);
+const itemStore = useItemStore();
+const itemsData = ref<Item[]>([]);  
 
 // Initialize data on component mount
 onMounted(() => {
   itemStore.initializeStore();
   itemsData.value = itemStore.getItems;
 });
-  
-// Reactive references for modals and selected items
-const isUploadModalOpen = ref(false); // For Upload Modal
-const isBasketModalOpen = ref(false); // For Basket Modal
-const selectedItem = ref<displayItem | null>(null); // Currently selected item
+
+watch(selectedItem, (newVal: Item | null) => { 
+  currentSelectedItemId.value = newVal ? newVal.id : null;
+  console.log(currentSelectedItemId.value) 
+});
+
+watch( () => itemStore.items, (newItems: Item[]) => { 
+  itemsData.value = newItems; 
+}, 
+{ deep: true } 
+);
 
 // Reactive references for the confirmation dialog
 const showConfirmation = ref(false);
@@ -402,7 +415,7 @@ const confirmationMessage = ref<string>('');
 const confirmationButtonText = ref<string>('');
 
 // Function to open the basket modal
-const openBasketModal = (item: displayItem) => {
+const openBasketModal = (item: Item) => {
   selectedItem.value = item;
   isBasketModalOpen.value = true;
 };
@@ -438,17 +451,15 @@ const closeConfirmation = () => {
 // Function to handle the action based on confirmation type
 const confirmAction = () => {
   if (confirmationType.value === 'cancel') {
-    // Handle cancel action
     alert('Transaction has been cancelled.');
-    closeBasketModal(); // Close basket modal after cancellation
-  } else if (confirmationType.value === 'add') {
-    // Handle add to basket action
+  } else if (confirmationType.value === 'add' && currentSelectedItemId.value) {
+    itemStore.updateItemStatus(currentSelectedItemId.value as string, true, false, false);
     alert('Item has been added to the basket.');
-    closeBasketModal(); // Close basket modal after adding to the basket
   }
-  showConfirmation.value = false;
+
+  closeBasketModal(); // Close basket modal after any action
+  showConfirmation.value = false; // Hide confirmation dialog
 };
-  
 
   // File upload (Upload Modal Logic)
   const uploadFile = ref<File | null>(null);
@@ -468,9 +479,6 @@ const confirmAction = () => {
     isViewImagesModalOpen.value = false;
   };
 
-  const itemStore = useItemStore();
-  const itemsData = ref<Item[]>([]);  
-
   const deviceName = ref<string>('');
   const brandName = ref<string>('');
   const modelName = ref<string>('');
@@ -487,18 +495,40 @@ const confirmAction = () => {
   };
   
   const handleUpload = (event: Event) => {
-    const fileInput = event.target as HTMLInputElement;
-    if (fileInput.files) {
-      const uploadedFiles = Array.from(fileInput.files).map(file =>
-        URL.createObjectURL(file) // Convert files to URLs for display
-      );
+  const fileInput = event.target as HTMLInputElement;
+  if (fileInput.files) {
+    const uploadedFiles = Array.from(fileInput.files).map(file =>
+      URL.createObjectURL(file) // Convert files to URLs for display
+    );
+    if (selectedItem.value) {
       selectedItem.value = {
         ...selectedItem.value,
-        images: uploadedFiles
+        images: uploadedFiles,
       };
-      console.log("Uploaded Files:", uploadedFiles);
+    } else {
+      selectedItem.value = {
+        username: "",
+        id: "",
+        name: "",
+        model: "",
+        type: "",
+        brand: "",
+        weight: 0,
+        images: uploadedFiles,
+        video: null,
+        sellerIdPhoto: "",
+        height: 0,
+        status: "",
+        description: "",
+        isListed: true,
+        isSold: false,
+        isCart: false,
+      };
     }
-  };
+    console.log("Uploaded Files:", uploadedFiles);
+  }
+};
+
 
   const handleSubmit = () => { 
     if (!deviceName.value || !brandName.value || !modelName.value || !descriptionDetails.value || !weightNumber.value || !heightNumber.value || !deviceType.value || !selectedCondition.value || !donatorName.value) { 
@@ -530,20 +560,8 @@ const confirmAction = () => {
     console.log("New Item Added:", newItem); 
   };
 
-interface DisplayItem {
-  brand: string;
-  weight: number;
-  height: number;
-  model: string;
-  username: string;
-  images: string;
-  status: string;
-  type: string;
-  id: string;
-}
-
 // Computed properties for filtered items by category
-const phones = computed<DisplayItem[]>(() =>
+const phones = computed<Item[]>(() =>
   itemStore.getItems
     .filter((item: Item) => item.type === 'Phone' && item.isListed && !item.isSold && !item.isCart)
     .map((item: Item) => ({
@@ -552,14 +570,22 @@ const phones = computed<DisplayItem[]>(() =>
       height: item.height,
       model: item.model,
       username: item.username,
-      images: item.images[0],
+      images: item.images,
       status: item.status,
       type: item.type,
-      id: item.id
+      id: item.id,
+      name: item.name,
+      video: item.video,
+      sellerIdPhoto: item.sellerIdPhoto,
+      description: item.description,
+      isListed: item.isListed,
+      isSold: item.isSold,
+      isCart: item.isCart,
     }))
 );
 
-const laptops = computed<DisplayItem[]>(() =>
+
+const laptops = computed<Item[]>(() =>
   itemStore.getItems
     .filter((item: Item) => item.type === 'Laptop' && item.isListed && !item.isSold && !item.isCart)
     .map((item: Item) => ({
@@ -568,15 +594,21 @@ const laptops = computed<DisplayItem[]>(() =>
       height: item.height,
       model: item.model,
       username: item.username,
-      images: item.images[0],
+      images: item.images,
       status: item.status,
       type: item.type,
+      id: item.id,
       name: item.name,
-      id: item.id
+      video: item.video,
+      sellerIdPhoto: item.sellerIdPhoto,
+      description: item.description,
+      isListed: item.isListed,
+      isSold: item.isSold,
+      isCart: item.isCart,
     }))
 );
 
-const tvs = computed<DisplayItem[]>(() =>
+const tvs = computed<Item[]>(() =>
   itemStore.getItems
     .filter((item: Item) => item.type === 'TV' && item.isListed && !item.isSold && !item.isCart)
     .map((item: Item) => ({
@@ -585,15 +617,21 @@ const tvs = computed<DisplayItem[]>(() =>
       height: item.height,
       model: item.model,
       username: item.username,
-      images: item.images[0],
+      images: item.images,
       status: item.status,
       type: item.type,
+      id: item.id,
       name: item.name,
-      id: item.id
+      video: item.video,
+      sellerIdPhoto: item.sellerIdPhoto,
+      description: item.description,
+      isListed: item.isListed,
+      isSold: item.isSold,
+      isCart: item.isCart,
     }))
 );
 
-const others = computed<DisplayItem[]>(() =>
+const others = computed<Item[]>(() =>
   itemStore.getItems
     .filter((item: Item) => !['Phone', 'Laptop', 'TV'].includes(item.type) && item.isListed && !item.isSold && !item.isCart)
     .map((item: Item) => ({
@@ -602,11 +640,17 @@ const others = computed<DisplayItem[]>(() =>
       height: item.height,
       model: item.model,
       username: item.username,
-      images: item.images[0],
+      images: item.images,
       status: item.status,
       type: item.type,
+      id: item.id,
       name: item.name,
-      id: item.id
+      video: item.video,
+      sellerIdPhoto: item.sellerIdPhoto,
+      description: item.description,
+      isListed: item.isListed,
+      isSold: item.isSold,
+      isCart: item.isCart,
     }))
 );
 
@@ -617,11 +661,6 @@ const rows = [
   { title: 'TVs', data: tvs.value },
   { title: 'Others', data: others.value },
 ];
-
-// Initialize data on component mount
-onMounted(() => {
-  itemsData.value = itemStore.getItems;
-});
 
   // Status Text and Color Helpers
   const getStatusText = (status: number) => {
