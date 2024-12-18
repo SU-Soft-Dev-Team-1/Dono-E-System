@@ -84,7 +84,7 @@
                     :class="{
                       'bg-[#22d056]': item.status === 'Almost new',
                       'bg-[#ffa057]': item.status === 'Slightly Worn',
-                      'bg-[#ffd757]': item.status === 'Slightly used',
+                      'bg-[#ffd757]': item.status === 'Slightly Used',
                       'bg-[#ff5d57]': item.status === 'Defective'
                     }">
                   </div>
@@ -227,25 +227,27 @@
                 </div>
   
                 <!-- Description/Specs -->
-                <textarea id="deviceSpecs" v-model="deviceSpecs" 
+                <textarea id="deviceSpecs" v-model="descriptionDetails" 
                           class="w-full h-[120px] p-3 mt-3 bg-white rounded-lg border border-[#d9d9d9] text-[#1b3c59] text-base font-['Ubuntu'] resize-none"
-                          placeholder="Description/Specs..."></textarea>
+                          placeholder="Description Details..."></textarea>
               </div>
+
+              <!-- Weight and Height -->
+              <div class="flex gap-2 mt-3">
+                  <input id="weightNumber" v-model="weightNumber" type="text" 
+                        class="w-1/2 p-3 bg-white rounded-lg border border-[#d9d9d9] text-[#1b3c59] text-base font-['Ubuntu']" 
+                        placeholder="Weight" />
+                  <input id="heightNumber" v-model="heightNumber" type="text" 
+                        class="w-1/2 p-3 bg-white rounded-lg border border-[#d9d9d9] text-[#1b3c59] text-base font-['Ubuntu']" 
+                        placeholder="Height" />
+                </div>
   
               <!-- Device Type and Condition -->
               <div class="flex gap-4 mt-3">
                 <!-- Device Type -->
                 <div class="w-1/2">
                   <label class="block text-black text-sm font-semibold font-['Ubuntu'] mb-1">Device Type</label>
-                  <div class="w-full h-9 px-3 bg-white rounded-lg border border-gray-300 flex items-center gap-2 text-sm">
-                    <span class="text-[#1b3c59] text-sm font-medium font-['Ubuntu']">Phone</span>
-                    <div class="ml-auto w-4 h-4">
-                      <!-- Dropdown Icon -->
-                      <svg fill="none" stroke="#1b3c59" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
-                        <path d="M6 9l6 6 6-6"></path>
-                      </svg>
-                    </div>
-                  </div>
+                  <input id="deviceType" v-model="deviceType" type="text" class="w-full h-9 px-3 bg-white rounded-lg border border-gray-300 flex items-center gap-2 text-sm" placeholder="Type(Phone/Laptop/etc.)"/>
                 </div>
   
                 <!-- Device Condition -->
@@ -253,11 +255,13 @@
                   <label class="block text-black text-sm font-semibold font-['Ubuntu'] mb-1">
                     Device Condition
                   </label>
-                  <div class="w-full h-9 px-3 bg-white rounded-lg border border-gray-300 flex items-center justify-between text-sm">
-                    <div class="flex items-center gap-2 bg-[#e4e4e4] px-2 py-1 rounded-lg">
-                      <div class="w-2.5 h-2.5 bg-[#22d056] rounded-full"></div>
-                      <span class="text-[#1b3c59] text-sm font-medium font-['Ubuntu']">Almost new</span>
-                    </div>
+                  <div class="w-full h-9 px-3 bg-white rounded-lg border border-gray-300 flex items-center justify-between text-sm relative">
+                    <select v-model="selectedCondition" class="w-full h-full px-3 bg-white rounded-lg border-none appearance-none focus:outline-none text-[#1b3c59] text-sm font-medium font-['Ubuntu']">
+                      <option value="Almost new">Almost new</option>
+                      <option value="Slightly Used">Slightly Used</option>
+                      <option value="Slightly Worn">Slightly Worn</option>
+                      <option value="Defective">Defective</option>
+                    </select>
   
                     <div class="ml-auto w-4 h-4">
                       <!-- Dropdown Icon -->
@@ -275,7 +279,7 @@
                 <label for="uploadFile" class="block text-black text-xl font-normal font-['Ubuntu'] mb-2">
                   Add Device Images
                 </label>
-                  <input id="uploadFile" v-on="uploadFile" type="file" 
+                  <input id="uploadFile" v-on:change="handleUpload" type="file" multiple
                       class="w-full p-3 bg-white rounded-lg border border-[#d9d9d9] text-[#1b3c59] text-base font-['Ubuntu']" />
               </div>
   
@@ -287,19 +291,11 @@
   
                 <input id="donatorName" v-model="donatorName" type="text" 
                       class="w-full p-3 mt-3 bg-white rounded-lg border border-[#d9d9d9] text-[#1b3c59] text-base font-['Ubuntu']" 
-                      placeholder="Name" />
-          
-                <input id="Address" v-model="Address" type="text" 
-                      class="w-full p-3 mt-3 bg-white rounded-lg border border-[#d9d9d9] text-[#1b3c59] text-base font-['Ubuntu']" 
-                      placeholder="Address" />
-  
-                <textarea id="productInsights" v-model="productInsights" 
-                          class="w-full h-[120px] p-3 mt-3 bg-white rounded-lg border border-[#d9d9d9] text-[#1b3c59] text-base font-['Ubuntu'] resize-none"
-                          placeholder="Donator's Product Insights"></textarea>
+                      placeholder="Username" />
               </div>
   
               <!-- Upload Button -->
-              <button @click="handleUpload" 
+              <button @click="handleSubmit" 
                 class="w-full h-10 mt-3 bg-[#1b3c59] rounded-lg shadow border border-[#d4d3d3] text-white">
                     Upload
               </button>
@@ -324,6 +320,12 @@
   import { StatusText } from '~/common/enums/StatusText';
   import type { displayItem } from '~/types/displayItem-type';
 import type { Item } from '~/types/item-type';
+
+// Initialize data on component mount
+onMounted(() => {
+  itemStore.initializeStore();
+  itemsData.value = itemStore.getItems;
+});
   
   // State: Modal visibility and selected item for basket modal
   const isUploadModalOpen = ref(false); // For Upload Modal
@@ -347,6 +349,24 @@ import type { Item } from '~/types/item-type';
   const closeViewImagesModal = () => {
     isViewImagesModalOpen.value = false;
   };
+
+  const itemStore = useItemStore();
+  const itemsData = ref<Item[]>([]);  
+
+  const deviceName = ref<string>('');
+  const brandName = ref<string>('');
+  const modelName = ref<string>('');
+  const descriptionDetails = ref<string>('');
+  const weightNumber = ref<number>();
+  const heightNumber = ref<number>();
+  const deviceImages = ref<string[]>([]);
+  const deviceType = ref<string>('');
+  const selectedCondition = ref<string>('');
+  const donatorName = ref<string>('')
+
+  const generateRandomId = (): string => { 
+    return 'item-' + Math.random().toString(36).substr(2, 9); 
+  };
   
   const handleUpload = (event: Event) => {
     const fileInput = event.target as HTMLInputElement;
@@ -362,8 +382,34 @@ import type { Item } from '~/types/item-type';
     }
   };
 
-const itemStore = useItemStore();
-const itemsData = ref<Item[]>([]);
+  const handleSubmit = () => { 
+    if (!deviceName.value || !brandName.value || !modelName.value || !descriptionDetails.value || !weightNumber.value || !heightNumber.value || !deviceType.value || !selectedCondition.value || !donatorName.value) { 
+      alert("Please fill in all the required fields before uploading."); 
+      return; 
+    }
+
+    const newItem: Item = { 
+      username: donatorName.value, 
+      id: generateRandomId(), 
+      name: deviceName.value, 
+      model: modelName.value, 
+      type: deviceType.value, 
+      brand: brandName.value, 
+      weight: weightNumber.value!, 
+      images: deviceImages.value, 
+      video: null, // Assuming no video upload functionality for now 
+      sellerIdPhoto: "https://via.placeholder.com/100", // Placeholder for now 
+      height: heightNumber.value!, 
+      status: selectedCondition.value, 
+      description: descriptionDetails.value, 
+      isListed: true, 
+      isSold: false, 
+      isCart: false, 
+    }; 
+    
+    itemStore.addItem(newItem); // Add the new item to the Pinia store 
+    console.log("New Item Added:", newItem); 
+  };
 
 interface DisplayItem {
   brand: string;
