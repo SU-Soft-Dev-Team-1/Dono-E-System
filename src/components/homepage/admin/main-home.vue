@@ -73,7 +73,7 @@
                 />
                 <!-- Item Details -->
                 <div class="w-[11.0625rem] justify-between items-center inline-flex">
-                  <p class="w-[5.6875rem] h-[1.125rem] text-black text-sm font-medium">{{ item.name }}</p>
+                  <p class="w-[5.6875rem] h-[1.125rem] text-black text-sm font-medium">{{ item.model }}</p>
                   <p class="w-[5.6875rem] h-[1.125rem] text-black text-xs font-light text-right">{{ item.type }}</p>
                 </div>
                 <!-- Status Tag -->
@@ -117,7 +117,7 @@
         
              <!-- Item Info -->
             <div class="flex-1">
-              <p class="text-lg font-bold text-[#1b3c59]">{{ selectedItem?.name || 'Acer Laptop' }}</p>
+              <p class="text-lg font-bold text-[#1b3c59]">{{ selectedItem?.model || 'Acer Laptop' }}</p>
               <p class="text-sm text-gray-600 mb-1">{{ selectedItem?.type || 'Predator Helios' }}</p>
               <p class="h-3.5 px-[0.3125rem] bg-[#e4e4e4] rounded-xl justify-start items-center gap-[0.3125rem] inline-flex">
                 <span
@@ -130,15 +130,17 @@
                   }"
                 ></span>
                 <span class="text-center text-[#1b3c59] text-xs font-medium leading-[0.86125rem]">
-                  {{ selectedItem?.status || 'Slightly used' }}
+                  {{ selectedItem?.status || 'NAN' }}
                 </span>
               </p>
               <div class="flex row-span-2 items-center justify-center gap-2 text-sm text-gray-500 mt-2">
                   <div class="w-24 h-24 flex justify-center items-center relative inset-0">
                       <img class="w-20 h-20 flex justify-center items-center" src="/assets/img/Icon.png"> 
                   </div>
-                    Donator: {{ selectedItem?.donator || 'Pedro Penduco' }}<br>
-                    Item: {{ selectedItem?.item || 'Asus Laptop' }} • PHP{{ selectedItem?.price || '20,000' }}
+                    Donator: {{ selectedItem?.username || 'NAN' }}<br>
+                    Brand: {{ selectedItem?.brand || 'NAN' }}<br>
+                    Weight: {{ selectedItem?.weight || 'NAN' }}<br>
+                    Height: {{ selectedItem?.height || 'NAN' }}
               </div>
             </div>
           </div>
@@ -364,30 +366,43 @@ const itemStore = useItemStore();
 const itemsData = ref<Item[]>([]);
 
 interface DisplayItem {
+  brand: string;
+  weight: number;
+  height: number;
+  model: string;
+  username: string;
   images: string;
   status: string;
   type: string;
-  name: string;
   id: string;
 }
 
 // Computed properties for filtered items by category
 const phones = computed<DisplayItem[]>(() =>
   itemStore.getItems
-    .filter((item: Item) => item.type === 'Phone' && item.isListed && !item.isSold)
+    .filter((item: Item) => item.type === 'Phone' && item.isListed && !item.isSold && !item.isCart)
     .map((item: Item) => ({
+      brand: item.brand,
+      weight: item.weight,
+      height: item.height,
+      model: item.model,
+      username: item.username,
       images: item.images[0],
       status: item.status,
       type: item.type,
-      name: item.name,
       id: item.id
     }))
 );
 
 const laptops = computed<DisplayItem[]>(() =>
   itemStore.getItems
-    .filter((item: Item) => item.type === 'Laptop' && item.isListed && !item.isSold)
+    .filter((item: Item) => item.type === 'Laptop' && item.isListed && !item.isSold && !item.isCart)
     .map((item: Item) => ({
+      brand: item.brand,
+      weight: item.weight,
+      height: item.height,
+      model: item.model,
+      username: item.username,
       images: item.images[0],
       status: item.status,
       type: item.type,
@@ -398,8 +413,13 @@ const laptops = computed<DisplayItem[]>(() =>
 
 const tvs = computed<DisplayItem[]>(() =>
   itemStore.getItems
-    .filter((item: Item) => item.type === 'TV' && item.isListed && !item.isSold)
+    .filter((item: Item) => item.type === 'TV' && item.isListed && !item.isSold && !item.isCart)
     .map((item: Item) => ({
+      brand: item.brand,
+      weight: item.weight,
+      height: item.height,
+      model: item.model,
+      username: item.username,
       images: item.images[0],
       status: item.status,
       type: item.type,
@@ -410,8 +430,13 @@ const tvs = computed<DisplayItem[]>(() =>
 
 const others = computed<DisplayItem[]>(() =>
   itemStore.getItems
-    .filter((item: Item) => !['Phone', 'Laptop', 'TV'].includes(item.type) && item.isListed && !item.isSold)
+    .filter((item: Item) => !['Phone', 'Laptop', 'TV'].includes(item.type) && item.isListed && !item.isSold && !item.isCart)
     .map((item: Item) => ({
+      brand: item.brand,
+      weight: item.weight,
+      height: item.height,
+      model: item.model,
+      username: item.username,
       images: item.images[0],
       status: item.status,
       type: item.type,

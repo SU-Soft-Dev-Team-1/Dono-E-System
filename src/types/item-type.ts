@@ -1,5 +1,5 @@
 export type Item = {
-    userId: string;
+    username: string;
     id: string;
     name: string;
     model: string;
@@ -14,4 +14,5 @@ export type Item = {
     description: string;
     isListed: boolean;  
     isSold: boolean;
+    isCart: boolean;
 }

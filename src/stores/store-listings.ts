@@ -6,7 +6,7 @@ export const useListings = defineStore('itemStore', {
   state: () => ({
     items: [
       {
-        userId: "user1",
+        username: "user1",
         id: "item1",
         name: "Acer Laptop",
         model: "Predator Helios",
@@ -21,7 +21,7 @@ export const useListings = defineStore('itemStore', {
         description: "High-performance gaming laptop.",
     },
     {
-        userId: "user2",
+      username: "user2",
         id: "item2",
         name: "HP Laptop",
         model: "Omen 16",
