@@ -500,9 +500,6 @@ const confirmAction = () => {
     }
   };
 
-const itemStore = useItemStore();
-const itemsData = ref<Item[]>([]);
-
 interface DisplayItem {
   brand: string;
   weight: number;
