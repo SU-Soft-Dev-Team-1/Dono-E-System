@@ -369,4 +369,9 @@ export const useItemStore = defineStore('itemStore', {
   getters: {
     getItems: (state) => state.items,
   },
+  actions:{
+    addItem(newItem: Item) {
+      this.items.push(newItem);
+    }
+  }
 });
