@@ -226,7 +226,7 @@
             </div>
 
         <!-- Success Notification -->
-        <div
+        <div v-if="showSuccess"
           class="w-[12.813rem] h-[3.813rem] px-5 py-3 bg-[#c3fad9] rounded-[10px] shadow justify-start items-center gap-5 inline-flex mt-3">
             <div class="flex-col justify-start items-start gap-2 inline-flex">
               <span class="w-6 h-6 relative inline-block align-middle">
@@ -248,7 +248,7 @@
           </div>
 
           <!-- Failure Notification -->
-          <div
+          <div v-if="showFailure"
             class="w-[12.813rem] h-[3.813rem] px-5 py-3 bg-[#f9dedc] rounded-[10px] shadow justify-start items-center gap-5 inline-flex mt-3">
             <span class="w-6 h-6 relative inline-block align-middle">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-8">
@@ -500,35 +500,72 @@ const confirmAction = () => {
     }
   };
 
-  const handleSubmit = () => { 
-    if (!deviceName.value || !brandName.value || !modelName.value || !descriptionDetails.value || !weightNumber.value || !heightNumber.value || !deviceType.value || !selectedCondition.value || !donatorName.value) { 
-      alert("Please fill in all the required fields before uploading."); 
-      return; 
-    }
+  const showSuccess = ref(false); // For success notification
+const showFailure = ref(false); // For failure notification
 
-    const newItem: Item = { 
-      username: donatorName.value, 
-      id: generateRandomId(), 
-      name: deviceName.value, 
-      model: modelName.value, 
-      type: deviceType.value, 
-      brand: brandName.value, 
-      weight: weightNumber.value!, 
-      images: deviceImages.value, 
-      video: null, // Assuming no video upload functionality for now 
-      sellerIdPhoto: "https://via.placeholder.com/100", // Placeholder for now 
-      height: heightNumber.value!, 
-      status: selectedCondition.value, 
-      description: descriptionDetails.value, 
-      isListed: true, 
-      isSold: false, 
-      isCart: false, 
-    }; 
-    
-    itemStore.addItem(newItem); // Add the new item to the Pinia store 
-    toggleUploadModal();
-    console.log("New Item Added:", newItem); 
+const handleSubmit = (): void => {
+  if (
+    !deviceName.value ||
+    !brandName.value ||
+    !modelName.value ||
+    !descriptionDetails.value ||
+    !weightNumber.value ||
+    !heightNumber.value ||
+    !deviceType.value ||
+    !selectedCondition.value ||
+    !donatorName.value
+  ) {
+    showFailureNotification();
+    return;
+  }
+
+  const newItem: Item = {
+    username: donatorName.value,
+    id: generateRandomId(),
+    name: deviceName.value,
+    model: modelName.value,
+    type: deviceType.value,
+    brand: brandName.value,
+    weight: weightNumber.value!,
+    images: deviceImages.value,
+    video: null, // Assuming no video upload functionality for now
+    sellerIdPhoto: "https://via.placeholder.com/100", // Placeholder for now
+    height: heightNumber.value!,
+    status: selectedCondition.value,
+    description: descriptionDetails.value,
+    isListed: true,
+    isSold: false,
+    isCart: false,
   };
+
+  itemStore.addItem(newItem); // Add the new item to the Pinia store
+  showSuccessNotification();
+  console.log("New Item Added:", newItem);
+
+  // Delay closing the modal 
+  setTimeout(() => { 
+    toggleUploadModal(); 
+  }, 3000); // Close the modal after 3 seconds
+};
+
+const showSuccessNotification = (): void => {
+  showSuccess.value = true;
+  showFailure.value = false;
+  setTimeout(() => {
+    showSuccess.value = false;
+  }, 3000); // Hide the notification after 3 seconds
+};
+
+const showFailureNotification = (): void => {
+  showFailure.value = true;
+  showSuccess.value = false;
+  setTimeout(() => {
+    showFailure.value = false;
+  }, 3000); // Hide the notification after 3 seconds
+};
+
+
+
 
 interface DisplayItem {
   brand: string;
