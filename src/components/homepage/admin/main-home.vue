@@ -98,14 +98,14 @@
 <!-- Upload Tech Form Modal -->
 <div v-if="isUploadModalOpen" 
          class="fixed top-0 left-[-20.313rem] w-screen h-screen bg-[rgba(0,_0,_0,_0.5)] flex justify-center items-center">
-      <div class="w-[600px] max-h-[90vh] bg-[#f2f2f0] rounded-[8px] px-[41px] py-[18px] overflow-hidden" @click.stop>
+      <div class="w-[600px] max-h-[95vh] bg-[#f2f2f0] rounded-[8px] px-[41px] py-[18px] overflow-hidden" @click.stop>
         <!-- Modal Header -->
         <div class="text-[28px] text-[#1b3c59] font-bold mb-[18px] text-center">
           Upload Form
         </div>
 
         <!-- Modal Content (with scrollbar) -->
-        <div class="overflow-y-auto max-h-[calc(100vh-10rem)] pr-4" style="border-radius: 8px;">
+        <div class="overflow-y-auto max-h-[calc(100vh-10rem)] pr-4 left-[10px]" style="border-radius: 8px;">
           <!-- Device Information Section -->
           <div class="mb-4">
             <div class="h-[25px] text-black text-[22px] font-normal font-['Ubuntu'] mb-[10px]">
@@ -129,26 +129,16 @@
             <textarea id="deviceSpecs" v-model="deviceSpecs" 
                       class="w-full h-[120px] p-3 mt-3 bg-white rounded-lg border border-[#d9d9d9] text-[#1b3c59] text-base font-['Ubuntu'] resize-none"
                       placeholder="Description/Specs..."></textarea>
-
-            <!-- Weight and Height -->
-            <div class="flex gap-2 mt-3">
-                <input id="weightName" v-model="weightName" type="text" 
-                       class="w-1/2 p-3 bg-white rounded-lg border border-[#d9d9d9] text-[#1b3c59] text-base font-['Ubuntu']" 
-                       placeholder="Weight" />
-                <input id="heightName" v-model="heightName" type="text" 
-                       class="w-1/2 p-3 bg-white rounded-lg border border-[#d9d9d9] text-[#1b3c59] text-base font-['Ubuntu']" 
-                       placeholder="Height" />
-            </div>
           </div>
 
           <!-- E-Waste Type and Device Condition Section in a row with smaller size -->
           <div class="flex gap-4 mt-3">
             <!-- E-Waste Type -->
             <div class="w-1/2">
-              <label class="block text-black text-sm font-semibold font-['Ubuntu'] mb-1">E-Waste Type</label>
+              <label class="block text-black text-sm font-semibold font-['Ubuntu'] mb-1">Device Type</label>
               <div class="w-full h-9 px-3 bg-white rounded-lg border border-gray-300 flex items-center gap-2 text-sm">
-                <span class="text-[#1b3c59] text-sm font-medium font-['Ubuntu']">Large Appliances</span>
-                <div class="ml-auto w-4 h-4">
+                <span class="text-[#1b3c59] text-sm font-medium font-['Ubuntu']">Phone</span>
+                <div class="ml-auto w-4 h-4 hover:cursor-pointer">
                   <!-- Dropdown Icon -->
                   <svg fill="none" stroke="#1b3c59" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
                     <path d="M6 9l6 6 6-6"></path>
@@ -165,7 +155,7 @@
                   <div class="w-2.5 h-2.5 bg-[#22d056] rounded-full"></div>
                   <span class="text-[#1b3c59] text-sm font-medium font-['Ubuntu']">Almost new</span>
                 </div>
-                <div class="ml-auto w-4 h-4">
+                <div class="ml-auto w-4 h-4 hover:cursor-pointer">
                   <!-- Dropdown Icon -->
                   <svg fill="none" stroke="#1b3c59" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
                     <path d="M6 9l6 6 6-6"></path>
@@ -175,11 +165,6 @@
             </div>
           </div>
 
-          <div class="mt-4">
-            <input id="tagName" v-model="tagName" type="text" 
-                   class="w-full p-3 bg-white rounded-lg border border-[#d9d9d9] text-[#1b3c59] text-base font-['Ubuntu']" 
-                   placeholder="Tags, e.g. Cellphone" />
-          </div>
 
           <!-- File Upload -->
           <div class="my-4">
