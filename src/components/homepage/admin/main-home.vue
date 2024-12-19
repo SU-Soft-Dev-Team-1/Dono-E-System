@@ -373,109 +373,90 @@
   </div>
   </template>
   
-<script setup lang="ts">
-  import { computed, ref, onMounted } from 'vue';
+  <script setup lang="ts">
+  import { computed, ref, onMounted, watchEffect } from 'vue';
   import { useItemStore } from '~/stores/store-itemStore';
-  import { StatusColor } from '~/common/enums/StatusColors';
-  import { StatusText } from '~/common/enums/StatusText';
-  import type { displayItem } from '~/types/displayItem-type';
-import type { Item } from '~/types/item-type';
-
-// Initialize data on component mount
-onMounted(() => {
-  itemStore.initializeStore();
-  itemsData.value = itemStore.getItems;
-});
+  import type { Item } from '~/types/item-type';
   
-// Reactive references for modals and selected items
-const isUploadModalOpen = ref(false); // For Upload Modal
-const isBasketModalOpen = ref(false); // For Basket Modal
-const selectedItem = ref<Item | null>(null); // Currently selected item
-const currentSelectedItemId = ref<string | null>(null);
-const itemStore = useItemStore();
-const itemsData = ref<Item[]>([]);  
-
-// Initialize data on component mount
-onMounted(() => {
-  itemStore.initializeStore();
-  itemsData.value = itemStore.getItems;
-});
-
-watch(selectedItem, (newVal: Item | null) => { 
-  currentSelectedItemId.value = newVal ? newVal.id : null;
-  console.log(currentSelectedItemId.value) 
-});
-
-watch( () => itemStore.items, (newItems: Item[]) => { 
-  itemsData.value = newItems; 
-}, 
-{ deep: true } 
-);
-
-// Reactive references for the confirmation dialog
-const showConfirmation = ref(false);
-const confirmationType = ref<string>(''); // 'cancel' or 'add'
-const confirmationTitle = ref<string>('');
-const confirmationMessage = ref<string>('');
-const confirmationButtonText = ref<string>('');
-
-// Function to open the basket modal
-const openBasketModal = (item: Item) => {
-  selectedItem.value = item;
-  isBasketModalOpen.value = true;
-};
-
-// Function to close the basket modal
-const closeBasketModal = () => { 
-  isBasketModalOpen.value = false;
-  selectedItem.value = null; // Reset selected item when closing modal
-};
-
-// Function to open the confirmation dialog based on the type ('cancel' or 'add')
-const openConfirmation = (type: string) => {
-  confirmationType.value = type;
+  const itemStore = useItemStore();
+  const itemsData = ref<Item[]>([]);
+  const selectedItem = ref<Item | null>(null);
+  const currentSelectedItemId = ref<string | null>(null);
+  const isUploadModalOpen = ref(false);
+  const isBasketModalOpen = ref(false);
+  const showConfirmation = ref(false);
+  const confirmationType = ref<string>(''); // 'cancel' or 'add'
+  const confirmationTitle = ref<string>('');
+  const confirmationMessage = ref<string>('');
+  const confirmationButtonText = ref<string>('');
   
-  if (type === 'cancel') {
-    confirmationTitle.value = 'Cancel Transaction';
-    confirmationMessage.value = `Are you sure you want to cancel your transaction for "${selectedItem.value?.name || 'item'}"?`;
-    confirmationButtonText.value = 'Confirm';
-  } else if (type === 'add') {
-    confirmationTitle.value = 'Add To Basket';
-    confirmationMessage.value = `Are you sure you want to add "${selectedItem.value?.name || 'item'}" to your basket?`;
-    confirmationButtonText.value = 'Add to My Cart';
-  }
-
-  showConfirmation.value = true;
-};
-
-// Function to close the confirmation dialog
-const closeConfirmation = () => {
-  showConfirmation.value = false;
-};
-
-// Function to handle the action based on confirmation type
-const confirmAction = () => {
-  if (confirmationType.value === 'cancel') {
-    alert('Transaction has been cancelled.');
-  } else if (confirmationType.value === 'add' && currentSelectedItemId.value) {
-    itemStore.updateItemStatus(currentSelectedItemId.value as string, true, false, false);
-    alert('Item has been added to the basket.');
-  }
-
-  closeBasketModal(); // Close basket modal after any action
-  showConfirmation.value = false; // Hide confirmation dialog
-};
-
-  // File upload (Upload Modal Logic)
+  onMounted(() => {
+    itemStore.initializeStore();
+    itemsData.value = itemStore.getItems;
+  });
+  
+  watch(selectedItem, (newVal: Item | null) => {
+    currentSelectedItemId.value = newVal ? newVal.id : null;
+    console.log(currentSelectedItemId.value);
+  });
+  
+  watch(
+    () => itemStore.items,
+    (newItems: Item[]) => {
+      itemsData.value = newItems;
+    },
+    { deep: true }
+  );
+  
+  const openBasketModal = (item: Item) => {
+    selectedItem.value = item;
+    isBasketModalOpen.value = true;
+  };
+  
+  const closeBasketModal = () => {
+    isBasketModalOpen.value = false;
+    selectedItem.value = null;
+  };
+  
+  const openConfirmation = (type: string) => {
+    confirmationType.value = type;
+  
+    if (type === 'cancel') {
+      confirmationTitle.value = 'Cancel Transaction';
+      confirmationMessage.value = `Are you sure you want to cancel your transaction for "${selectedItem.value?.name || 'item'}"?`;
+      confirmationButtonText.value = 'Confirm';
+    } else if (type === 'add') {
+      confirmationTitle.value = 'Add To Basket';
+      confirmationMessage.value = `Are you sure you want to add "${selectedItem.value?.name || 'item'}" to your basket?`;
+      confirmationButtonText.value = 'Add to My Cart';
+    }
+  
+    showConfirmation.value = true;
+  };
+  
+  const closeConfirmation = () => {
+    showConfirmation.value = false;
+  };
+  
+  const confirmAction = () => {
+    if (confirmationType.value === 'cancel') {
+      alert('Transaction has been cancelled.');
+    } else if (confirmationType.value === 'add' && currentSelectedItemId.value) {
+      itemStore.updateItemStatus(currentSelectedItemId.value as string, true, false, false);
+      alert('Item has been added to the basket.');
+    }
+  
+    closeBasketModal(); // Close basket modal after any action
+    showConfirmation.value = false; // Hide confirmation dialog
+  };
+  
   const uploadFile = ref<File | null>(null);
   const toggleUploadModal = () => {
     isUploadModalOpen.value = !isUploadModalOpen.value;
   };
   
-  // State for View Product Images Modal
   const isViewImagesModalOpen = ref(false);
   
-  // Open and Close Modal
   const openViewImagesModal = () => {
     isViewImagesModalOpen.value = true;
   };
@@ -483,7 +464,7 @@ const confirmAction = () => {
   const closeViewImagesModal = () => {
     isViewImagesModalOpen.value = false;
   };
-
+  
   const deviceName = ref<string>('');
   const brandName = ref<string>('');
   const modelName = ref<string>('');
@@ -493,247 +474,140 @@ const confirmAction = () => {
   const deviceImages = ref<string[]>([]);
   const deviceType = ref<string>('');
   const selectedCondition = ref<string>('');
-  const donatorName = ref<string>('')
-
-  const generateRandomId = (): string => { 
-    return 'item-' + Math.random().toString(36).substr(2, 9); 
+  const donatorName = ref<string>('');
+  
+  const generateRandomId = (): string => {
+    return 'item-' + Math.random().toString(36).substr(2, 9);
   };
   
   const handleUpload = (event: Event) => {
-  const fileInput = event.target as HTMLInputElement;
-  if (fileInput.files) {
-    const uploadedFiles = Array.from(fileInput.files).map(file =>
-      URL.createObjectURL(file) // Convert files to URLs for display
-    );
-    if (selectedItem.value) {
-      selectedItem.value = {
-        ...selectedItem.value,
-        images: uploadedFiles,
-      };
-    } else {
-      selectedItem.value = {
-        username: "",
-        id: "",
-        name: "",
-        model: "",
-        type: "",
-        brand: "",
-        weight: 0,
-        images: uploadedFiles,
-        video: null,
-        sellerIdPhoto: "",
-        height: 0,
-        status: "",
-        description: "",
-        isListed: true,
-        isSold: false,
-        isCart: false,
-      };
+    const fileInput = event.target as HTMLInputElement;
+    if (fileInput.files) {
+      const uploadedFiles = Array.from(fileInput.files).map((file) =>
+        URL.createObjectURL(file) // Convert files to URLs for display
+      );
+      if (selectedItem.value) {
+        selectedItem.value = {
+          ...selectedItem.value,
+          images: uploadedFiles,
+        };
+      } else {
+        selectedItem.value = {
+          username: '',
+          id: '',
+          name: '',
+          model: '',
+          type: '',
+          brand: '',
+          weight: 0,
+          images: uploadedFiles,
+          video: null,
+          sellerIdPhoto: '',
+          height: 0,
+          status: '',
+          description: '',
+          isListed: true,
+          isSold: false,
+          isCart: false,
+        };
+      }
+      console.log('Uploaded Files:', uploadedFiles);
     }
-    console.log("Uploaded Files:", uploadedFiles);
-  }
-};
-
+  };
+  
   const showSuccess = ref(false); // For success notification
-const showFailure = ref(false); // For failure notification
-
-const handleSubmit = (): void => {
-  if (
-    !deviceName.value ||
-    !brandName.value ||
-    !modelName.value ||
-    !descriptionDetails.value ||
-    !weightNumber.value ||
-    !heightNumber.value ||
-    !deviceType.value ||
-    !selectedCondition.value ||
-    !donatorName.value
-  ) {
-    showFailureNotification();
-    return;
-  }
-
-  const newItem: Item = {
-    username: donatorName.value,
-    id: generateRandomId(),
-    name: deviceName.value,
-    model: modelName.value,
-    type: deviceType.value,
-    brand: brandName.value,
-    weight: weightNumber.value!,
-    images: deviceImages.value,
-    video: null, // Assuming no video upload functionality for now
-    sellerIdPhoto: "https://via.placeholder.com/100", // Placeholder for now
-    height: heightNumber.value!,
-    status: selectedCondition.value,
-    description: descriptionDetails.value,
-    isListed: true,
-    isSold: false,
-    isCart: false,
+  const showFailure = ref(false); // For failure notification
+  
+  const handleSubmit = (): void => {
+    if (
+      !deviceName.value ||
+      !brandName.value ||
+      !modelName.value ||
+      !descriptionDetails.value ||
+      !weightNumber.value ||
+      !heightNumber.value ||
+      !deviceType.value ||
+      !selectedCondition.value ||
+      !donatorName.value
+    ) {
+      showFailureNotification();
+      return;
+    }
+  
+    const newItem: Item = {
+      username: donatorName.value,
+      id: generateRandomId(),
+      name: deviceName.value,
+      model: modelName.value,
+      type: deviceType.value,
+      brand: brandName.value,
+      weight: weightNumber.value!,
+      images: deviceImages.value,
+      video: null, // Assuming no video upload functionality for now
+      sellerIdPhoto: 'https://via.placeholder.com/100', // Placeholder for now
+      height: heightNumber.value!,
+      status: selectedCondition.value,
+      description: descriptionDetails.value,
+      isListed: true,
+      isSold: false,
+      isCart: false,
+    };
+  
+    itemStore.addItem(newItem); // Add the new item to the Pinia store
+    showSuccessNotification();
+    console.log('New Item Added:', newItem);
+  
+    // Delay closing the modal
+    setTimeout(() => {
+      toggleUploadModal();
+    }, 3000); // Close the modal after 3 seconds
   };
-
-  itemStore.addItem(newItem); // Add the new item to the Pinia store
-  showSuccessNotification();
-  console.log("New Item Added:", newItem);
-
-  // Delay closing the modal 
-  setTimeout(() => { 
-    toggleUploadModal(); 
-  }, 3000); // Close the modal after 3 seconds
-};
-
-const showSuccessNotification = (): void => {
-  showSuccess.value = true;
-  showFailure.value = false;
-  setTimeout(() => {
-    showSuccess.value = false;
-  }, 3000); // Hide the notification after 3 seconds
-};
-
-const showFailureNotification = (): void => {
-  showFailure.value = true;
-  showSuccess.value = false;
-  setTimeout(() => {
+  
+  const showSuccessNotification = (): void => {
+    showSuccess.value = true;
     showFailure.value = false;
-  }, 3000); // Hide the notification after 3 seconds
-};
-
-
-
-
-interface DisplayItem {
-  brand: string;
-  weight: number;
-  height: number;
-  model: string;
-  username: string;
-  images: string;
-  status: string;
-  type: string;
-  id: string;
-}
-
-// Computed properties for filtered items by category
-const phones = computed<Item[]>(() =>
-  itemStore.getItems
-    .filter((item: Item) => item.type === 'Phone' && item.isListed && !item.isSold && !item.isCart)
-    .map((item: Item) => ({
-      brand: item.brand,
-      weight: item.weight,
-      height: item.height,
-      model: item.model,
-      username: item.username,
-      images: item.images,
-      status: item.status,
-      type: item.type,
-      id: item.id,
-      name: item.name,
-      video: item.video,
-      sellerIdPhoto: item.sellerIdPhoto,
-      description: item.description,
-      isListed: item.isListed,
-      isSold: item.isSold,
-      isCart: item.isCart,
-    }))
-);
-
-
-const laptops = computed<Item[]>(() =>
-  itemStore.getItems
-    .filter((item: Item) => item.type === 'Laptop' && item.isListed && !item.isSold && !item.isCart)
-    .map((item: Item) => ({
-      brand: item.brand,
-      weight: item.weight,
-      height: item.height,
-      model: item.model,
-      username: item.username,
-      images: item.images,
-      status: item.status,
-      type: item.type,
-      id: item.id,
-      name: item.name,
-      video: item.video,
-      sellerIdPhoto: item.sellerIdPhoto,
-      description: item.description,
-      isListed: item.isListed,
-      isSold: item.isSold,
-      isCart: item.isCart,
-    }))
-);
-
-const tvs = computed<Item[]>(() =>
-  itemStore.getItems
-    .filter((item: Item) => item.type === 'TV' && item.isListed && !item.isSold && !item.isCart)
-    .map((item: Item) => ({
-      brand: item.brand,
-      weight: item.weight,
-      height: item.height,
-      model: item.model,
-      username: item.username,
-      images: item.images,
-      status: item.status,
-      type: item.type,
-      id: item.id,
-      name: item.name,
-      video: item.video,
-      sellerIdPhoto: item.sellerIdPhoto,
-      description: item.description,
-      isListed: item.isListed,
-      isSold: item.isSold,
-      isCart: item.isCart,
-    }))
-);
-
-const others = computed<Item[]>(() =>
-  itemStore.getItems
-    .filter((item: Item) => !['Phone', 'Laptop', 'TV'].includes(item.type) && item.isListed && !item.isSold && !item.isCart)
-    .map((item: Item) => ({
-      brand: item.brand,
-      weight: item.weight,
-      height: item.height,
-      model: item.model,
-      username: item.username,
-      images: item.images,
-      status: item.status,
-      type: item.type,
-      id: item.id,
-      name: item.name,
-      video: item.video,
-      sellerIdPhoto: item.sellerIdPhoto,
-      description: item.description,
-      isListed: item.isListed,
-      isSold: item.isSold,
-      isCart: item.isCart,
-    }))
-);
-
-// Rows for different sections
-const rows = [
-  { title: 'Phones', data: phones.value },
-  { title: 'Laptops', data: laptops.value },
-  { title: 'TVs', data: tvs.value },
-  { title: 'Others', data: others.value },
-];
-
-  // Status Text and Color Helpers
-  const getStatusText = (status: number) => {
-    const statusText: { [key: number]: string } = {
-      1: StatusText.AlmostNew,
-      2: StatusText.SlightlyWorn,
-      3: StatusText.SlightlyUsed,
-      4: StatusText.Defective
-    };
-    return statusText[status] || "";
+    setTimeout(() => {
+      showSuccess.value = false;
+    }, 3000); // Hide the notification after 3 seconds
   };
   
-  const classTag = (status: number) => {
-    const statusColor: { [key: number]: string } = {
-      1: StatusColor.AlmostNew,
-      2: StatusColor.SlightlyWorn,
-      3: StatusColor.SlightlyUsed,
-      4: StatusColor.Defective
-    };
-    return statusColor[status] || "";
+  const showFailureNotification = (): void => {
+    showFailure.value = true;
+    showSuccess.value = false;
+    setTimeout(() => {
+      showFailure.value = false;
+    }, 3000); // Hide the notification after 3 seconds
   };
   
+  // Computed properties for filtered items by category
+  const phones = ref<Item[]>([]);
+  const laptops = ref<Item[]>([]);
+  const tvs = ref<Item[]>([]);
+  const others = ref<Item[]>([]);
+  
+  watchEffect(() => {
+    phones.value = itemStore.getItems.filter((item: Item) => item.type === 'Phone' && item.isListed && !item.isSold && !item.isCart);
+    laptops.value = itemStore.getItems.filter((item: Item) => item.type === 'Laptop' && item.isListed && !item.isSold && !item.isCart);
+    tvs.value = itemStore.getItems.filter((item: Item) => item.type === 'TV' && item.isListed && !item.isSold && !item.isCart);
+    others.value = itemStore.getItems.filter((item: Item) => !['Phone', 'Laptop', 'TV'].includes(item.type) && item.isListed && !item.isSold && !item.isCart);
+  });
+  
+  // Rows for different sections
+  const rows = ref([
+    { title: 'Phones', data: phones.value },
+    { title: 'Laptops', data: laptops.value },
+    { title: 'TVs', data: tvs.value },
+    { title: 'Others', data: others.value },
+  ]);
+  
+  watchEffect(() => {
+    rows.value = [
+      { title: 'Phones', data: phones.value },
+      { title: 'Laptops', data: laptops.value },
+      { title: 'TVs', data: tvs.value },
+      { title: 'Others', data: others.value },
+    ];
+  });
   </script>
+  
+  
